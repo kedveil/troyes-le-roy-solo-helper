@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troyes: Le Roy Solo Helper</title>
+    <style>
+        :root { 
+            --bg: #e0d7c6; 
+            --card: #fdfaf5; 
+            --accent: #7a2a1e; 
+            --accent-hover: #9c382b;
+            --red: #d32f2f; 
+            --yellow: #fbc02d; 
+            --white: #ffffff; 
+            --highlight: #2ecc71; 
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Georgia', serif; 
+            background-color: var(--bg); 
+            color: #333; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 12px 8px; 
+            margin: 0;
+            overflow-y: scroll;
+        }
+
+        .app-container { 
+            background: var(--card); 
+            border: 2px solid #8b7355; 
+            border-radius: 8px; 
+            width: 100%; 
+            max-width: 440px; 
+            padding: 14px 16px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.18); 
+            position: relative; 
+            contain: layout style;
+        }
+        
+        .header-wrap { 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative; 
+            border-bottom: 2px solid var(--accent); 
+            margin-bottom: 8px; 
+            padding-bottom: 4px;
+            min-height: 38px;
+        }
+
+        .header-spacer {
+            width: 30px;
+            height: 30px;
+            visibility: hidden;
+            flex-shrink: 0;
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--accent); 
+            margin: 0; 
+            font-variant: small-caps; 
+            font-size: 1.5rem;
+            line-height: 1;
+            flex-grow: 1;
+        }
+
+        .reset-btn { 
+            background: transparent !important; 
+            border: none; 
+            color: var(--accent); 
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            padding: 0; 
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none !important; 
+            transition: transform 0.25s ease, color 0.2s ease; 
+            line-height: 1;
+            outline: none;
+        }
+
+        .reset-btn:hover { 
+            background: transparent !important;
+            transform: rotate(-90deg); 
+            color: var(--accent-hover); 
+            box-shadow: none !important;
+        }
+
+        .phase-indicator { 
+            text-align: center; 
+            margin-bottom: 10px; 
+            height: 40px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .phase-header-img {
+            max-width: 100%;
+            height: 38px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .phase-header-fallback {
+            font-weight: bold; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            color: #555; 
+            font-size: 0.82rem; 
+            line-height: 40px;
+        }
+
+        .setup-card {
+            background: #f3edd3;
+            border: 1px solid #c8b896;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            font-size: 0.82rem;
+            line-height: 1.35;
+        }
+
+        .setup-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            border-bottom: 1px solid #d8c8a6;
+            padding-bottom: 2px;
+        }
+
+        .setup-card h3 {
+            margin: 0;
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .info-icon-btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.72rem;
+            font-weight: bold;
+            font-family: sans-serif;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: none;
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .info-icon-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .setup-steps {
+            margin: 0;
+            padding-left: 16px;
+        }
+
+        .setup-steps li {
+            margin-bottom: 3px;
+        }
+
+        .dice-grid { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+            justify-content: center; 
+            align-items: center;
+            height: 55px; 
+            margin: 6px 0; 
+        }
+
+        .die { 
+            width: 40px; 
+            height: 40px; 
+            border: 2px solid #333; 
+            border-radius: 5px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            font-size: 1.25rem; 
+            box-shadow: 1px 2px 0 rgba(0,0,0,0.1); 
+            position: relative; 
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            will-change: transform;
+        }
+
+        .die.red { background: var(--red); color: white; }
+        .die.yellow { background: var(--yellow); color: #333; }
+        .die.white { background: var(--white); color: #333; }
+        
+        .die.target { 
+            border: 3px solid var(--highlight); 
+            box-shadow: 0 0 8px var(--highlight); 
+            transform: scale(1.08); 
+        }
+
+        .die.target::after { 
+            content: '★'; 
+            position: absolute; 
+            top: -11px; 
+            font-size: 0.75rem; 
+            color: var(--highlight); 
+        }
+
+        .roll-badge-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: var(--accent);
+            font-size: 1rem;
+            min-height: 32px;
+        }
+
+        .action-die {
+            width: 30px;
+            height: 30px;
+            background: #222;
+            color: #fff;
+            border: 2px solid #000;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.25);
+        }
+
+        .roll-total-num {
+            font-size: 1.1rem;
+            margin-left: 2px;
+        }
+
+        .theme-img-wrap { 
+            text-align: center; 
+            margin: 8px 0; 
+            width: 100%;
+            height: 80px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #efe9dd;
+            border-radius: 4px;
+            border: 1px solid #8b7355;
+            transition: opacity 0.3s ease;
+        }
+
+        .theme-img-wrap img { 
+            max-width: 100%; 
+            max-height: 100%; 
+            object-fit: contain;
+            display: block; 
+            margin: 0 auto; 
+        }
+
+        .theme-img-wrap.hidden-frame {
+            display: none !important;
+        }
+
+        .action-box { 
+            background: #fff; 
+            border: 1px solid #ddd; 
+            border-left: 4px solid var(--accent); 
+            padding: 10px 12px; 
+            margin-top: 10px; 
+            border-radius: 0 4px 4px 0; 
+            min-height: 140px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+
+        .action-box.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        button { 
+            background: var(--accent); 
+            color: white; 
+            border: none; 
+            padding: 10px; 
+            width: 100%; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-family: inherit; 
+            font-size: 1rem; 
+            margin-top: 8px; 
+            transition: background 0.2s, transform 0.1s; 
+            box-shadow: 0 2px 0 #5a1f16; 
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+        }
+
+        button:active { 
+            transform: translateY(1px); 
+            box-shadow: none; 
+        }
+
+        button.secondary { 
+            background: #555; 
+            box-shadow: 0 2px 0 #333; 
+        }
+
+        button.secondary:hover {
+            background: #666;
+        }
+
+        button.danger { 
+            background: #444; 
+            box-shadow: 0 2px 0 #222;
+            margin-top: 18px; 
+            font-size: 0.88rem; 
+            opacity: 0.9; 
+        }
+
+        button.danger:hover {
+            background: #d32f2f;
+            box-shadow: 0 2px 0 #8b0000;
+        }
+
+        .price-tag { 
+            display: inline-block; 
+            align-self: flex-start;
+            background: #333; 
+            color: white; 
+            padding: 3px 8px; 
+            border-radius: 8px; 
+            font-size: 0.8rem; 
+            margin-top: 6px; 
+            font-weight: bold; 
+        }
+
+        #log { 
+            font-size: 0.78rem; 
+            color: #555; 
+            margin-top: 10px; 
+            height: 70px; 
+            overflow-y: auto; 
+            border-top: 1px solid #ccc; 
+            padding: 6px; 
+            background: #f9f6f0; 
+            border-radius: 4px;
+            border: 1px solid #e0d7c6;
+        }
+
+        .ref-box, .score-box { 
+            margin-top: 12px; 
+            padding: 10px; 
+            background: #efebe4; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            font-size: 0.8rem; 
+        }
+
+        .ref-box h4, .score-box h4 { 
+            margin: 0 0 6px 0; 
+            color: var(--accent); 
+            border-bottom: 1px solid #ccc; 
+            padding-bottom: 2px; 
+            text-transform: uppercase; 
+            font-size: 0.75rem; 
+        }
+
+        .score-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 6px; 
+            font-size: 0.78rem; 
+        }
+
+        .score-table td { 
+            padding: 4px; 
+            border-bottom: 1px solid #ddd; 
+        }
+
+        .ref-item {
+            margin-bottom: 4px;
+            line-height: 1.25;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .modal-card {
+            background: var(--card);
+            border: 2px solid #8b7355;
+            border-radius: 8px;
+            padding: 14px 16px;
+            max-width: 380px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            font-size: 0.82rem;
+            line-height: 1.4;
+        }
+
+        .modal-card h3 {
+            margin: 0 0 8px 0;
+            color: var(--accent);
+            border-bottom: 1px solid #8b7355;
+            padding-bottom: 4px;
+            font-size: 0.95rem;
+        }
+
+        .modal-close-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-top: 10px;
+            width: auto;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header-wrap">
+        <div class="header-spacer" aria-hidden="true"></div>
+        <h1>Le Roy's Challenge</h1>
+        <button class="reset-btn" onclick="fullReset()" title="Reset Game" aria-label="Reset Game">⟳</button>
+    </div>
+    
+    <div id="phase-container" class="phase-indicator">
+        <img id="phase-img" class="phase-header-img" src="initial-placement-header.png" alt="Initial Placement Phase" onerror="handlePhaseImgError('Initial Placement Phase')">
+    </div>
+    
+    <div id="setup-step1-ui">
+        <div class="setup-card">
+            <div class="setup-card-header">
+                <h3>Step 1: Meeple Placement</h3>
+                <button class="info-icon-btn" onclick="openModal()" title="Placement Rules Info">i</button>
+            </div>
+            <ol class="setup-steps">
+                <li>Roll 6 placement dice.</li>
+                <li>Le Roy places 3 meeples on the ★ highlighted dice spots (left-to-right).</li>
+                <li>Place 2 of your own meeples. Repeat until buildings are full (12 Le Roy, 6 Player).</li>
+            </ol>
+        </div>
+
+        <div id="setup-dice" class="dice-grid">
+            <div class="die white" style="opacity: 0.2;">?</div>
+            <div class="die white" style="opacity: 0.2;">?</div>
+            <div class="die white" style="opacity: 0.2;">?</div>
+            <div class="die white" style="opacity: 0.2;">?</div>
+            <div class="die white" style="opacity: 0.2;">?</div>
+            <div class="die white" style="opacity: 0.2;">?</div>
+        </div>
+
+        <div id="setup-img-container" class="theme-img-wrap hidden-frame">
+            <img src="setup-guide.png" alt="Setup Reference" onerror="this.parentNode.classList.add('hidden-frame')">
+        </div>
+
+        <button onclick="rollSetup()">Roll Placement Dice</button>
+        <button class="secondary" style="margin-top:8px;" onclick="goToCharacterSetup()">Proceed: All Meeples Placed</button>
+    </div>
+
+    <div id="setup-step2-ui" style="display:none;">
+        <div class="setup-card">
+            <div class="setup-card-header">
+                <h3>Step 2: Character Cards</h3>
+            </div>
+            <ul class="setup-steps">
+                <li>Shuffle 6 character cards face down.</li>
+                <li>Stack them so only bottom scoring parts show.</li>
+                <li>Top card is resolved first when triggered.</li>
+            </ul>
+        </div>
+
+        <button onclick="startGameplay()" style="background: #4a6741; box-shadow: 0 2px 0 #2d4128; font-size: 1.1rem; margin-top: 12px;">Start Gameplay Phase</button>
+    </div>
+
+    <div id="gameplay-ui" style="display:none;">
+        <div class="theme-img-wrap" style="height: 70px;">
+            <img src="action-icon.png" alt="Le Roy Action" onerror="this.parentNode.style.display='none'">
+        </div>
+
+        <button onclick="takeLeRoyTurn()" style="background: #4a6741; box-shadow: 0 2px 0 #2d4128; font-size: 1.15rem;">Roll 2D6 Action</button>
+        
+        <div id="result-display" class="action-box">
+            <div>
+                <div id="roll-badge" class="roll-badge-wrap">
+                    <span>Roll:</span>
+                    <div class="action-die">-</div>
+                    <div class="action-die">-</div>
+                    <span class="roll-total-num">(-)</span>
+                </div>
+                <h3 id="action-title" style="margin:0; color: #222; font-size: 0.95rem;">Ready for action roll</h3>
+                <p id="action-desc" style="font-size: 0.85rem; margin: 6px 0; line-height: 1.3; color: #444;">Roll 2D6 to execute Le Roy's turn.</p>
+            </div>
+            <div id="price-display" class="price-tag">Price: -</div>
+        </div>
+        
+        <button class="danger" onclick="confirmEndGame()">End Game & Score</button>
+    </div>
+
+    <div id="scoring-ui" style="display:none;">
+        <div class="score-box">
+            <h4>Final Scoring Rules</h4>
+            <div class="theme-img-wrap" style="height: 80px;">
+                <img src="scoring-illustration.png" alt="Victory/Defeat" onerror="this.parentNode.style.display='none'">
+            </div>
+            <div class="ref-item">• Receive points for each remaining character card.</div>
+            <div class="ref-item">• <strong>Final Score:</strong> Subtract Le Roy's VP from your total score.</div>
+            
+            <table class="score-table">
+                <tr style="font-weight:bold; background:#ddd;"><td>Difference</td><td>Rank</td></tr>
+                <tr><td>-100 - 0</td><td>You're beheaded.</td></tr>
+                <tr><td>0 - 5</td><td>Le Roy still has your head.</td></tr>
+                <tr><td>6 - 10</td><td>Average performance.</td></tr>
+                <tr><td>11 - 15</td><td>Starting to resemble something.</td></tr>
+                <tr><td>16 - 20</td><td>Le Roy is starting to worry.</td></tr>
+                <tr><td>20+</td><td>Go play Agricola solo instead.</td></tr>
+            </table>
+        </div>
+        <button class="secondary" onclick="fullReset()" style="margin-top: 10px;">New Game</button>
+    </div>
+
+    <div id="log-container">
+        <div id="log"><div>• App ready. Roll placement dice to begin setup.</div></div>
+    </div>
+
+    <div id="ref-section" class="ref-box">
+        <h4>Card Modifications Reference</h4>
+        <div class="ref-item"><strong>Tax Collector:</strong> Gain 2 denier per citizen in City Hall (instead of 1).</div>
+        <div class="ref-item"><strong>Tithing:</strong> Take up to 3 of Le Roy's yellow dice (max 3/action).</div>
+        <div class="ref-item"><strong>Migrant Workers:</strong> If cube placed in Cathedral, Le Roy +1 VP.</div>
+    </div>
+</div>
+
+<div id="info-modal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal-card">
+        <h3>Dice & Placement Priority Rules</h3>
+        <p><strong>Priority Order:</strong> Higher Value > Red > Yellow > White.</p>
+        <p><strong>Building Target by Color:</strong></p>
+        <ul style="margin: 0; padding-left: 18px;">
+            <li><strong style="color:var(--red);">Red:</strong> Palace</li>
+            <li><strong style="color:#b8860b;">Yellow:</strong> City Hall</li>
+            <li><strong>White:</strong> Bishopric</li>
+        </ul>
+        <p style="margin-top: 6px;">Le Roy places on the best available spots in each building. Equal numbers are resolved by color order. Dice values are irrelevant for exact building placement once priority order determines which 3 dice are used.</p>
+        <button class="modal-close-btn" onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+    const colorPriority = { red: 3, yellow: 2, white: 1 };
+
+    const ACTION_TABLE = {
+        2: { title: "Le Roy gains 3 VP", desc: "Purchase your best available die for 6 deniers.", price: "3 dice" },
+        3: { title: "Le Roy gains 2 VP", desc: "Purchase your best available die for 4 deniers.", price: "2 dice" },
+        4: { title: "Le Roy places 1 worker meeple", desc: "Red = Palace, Yellow = City Hall, White = Bishopric. If possible, Le Roy evicts one of your meeples.", price: "1 die" },
+        5: { title: "Le Roy resolves right-most event", desc: "Le Roy spends 1 die per free banner on the event card.", price: "X die/dice" },
+        6: { title: "Le Roy places 1 tradesman meeple", desc: "Places on spot returning most VP. Tie: least expensive location. Tie: Red > Yellow > White.", price: "1 die" },
+        7: { title: "Le Roy places 2 cathedral cubes", desc: "Best spots on lowest available row. If full, Le Roy gains 2 VP instead.", price: "2 dice" },
+        8: { title: "Le Roy reveals a character card", desc: "Both receive points of top character immediately. Remove card. If empty, Le Roy gains 1 VP.", price: "FREE" },
+        9: { title: "Le Roy resolves right-most event", desc: "Le Roy spends 1 die per free banner on the event card.", price: "X die/dice" },
+        10: { title: "Le Roy places 1 worker meeple", desc: "Red = Palace, Yellow = City Hall, White = Bishopric. If possible, Le Roy evicts one of your meeples.", price: "1 die" },
+        11: { title: "Le Roy gains 2 VP", desc: "Purchase your best available die for 4 deniers.", price: "2 dice" },
+        12: { title: "Le Roy gains 3 VP", desc: "Purchase your best available die for 6 deniers.", price: "3 dice" }
+    };
+
+    function updatePhaseHeader(imgSrc, fallbackText) {
+        const container = document.getElementById('phase-container');
+        container.innerHTML = `<img id="phase-img" class="phase-header-img" src="${imgSrc}" alt="${fallbackText}" onerror="handlePhaseImgError('${fallbackText}')">`;
+    }
+
+    function handlePhaseImgError(fallbackText) {
+        const container = document.getElementById('phase-container');
+        container.innerHTML = `<span class="phase-header-fallback">${fallbackText}</span>`;
+    }
+
+    function openModal() {
+        document.getElementById('info-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('info-modal').style.display = 'none';
+    }
+
+    function closeModalOnOverlay(e) {
+        if (e.target.id === 'info-modal') {
+            closeModal();
+        }
+    }
+
+    function rollSetup() {
+        const imgContainer = document.getElementById('setup-img-container');
+        imgContainer.classList.remove('hidden-frame');
+        
+        let setupPool = [];
+        ['red', 'yellow', 'white'].forEach(c => {
+            setupPool.push({ color: c, val: Math.floor(Math.random() * 6) + 1 });
+            setupPool.push({ color: c, val: Math.floor(Math.random() * 6) + 1 });
+        });
+        
+        setupPool.sort((a,b) => (b.val !== a.val) ? b.val - a.val : colorPriority[b.color] - colorPriority[a.color]);
+        
+        const container = document.getElementById('setup-dice');
+        container.innerHTML = '';
+        
+        setupPool.forEach((d, index) => {
+            const el = document.createElement('div');
+            el.className = `die ${d.color}`;
+            if (index < 3) el.classList.add('target');
+            el.innerText = d.val;
+            container.appendChild(el);
+        });
+
+        log("Setup: Rolled 6 placement dice. Highlighted top 3 for Le Roy.");
+    }
+
+    function goToCharacterSetup() {
+        document.getElementById('setup-step1-ui').style.display = 'none';
+        document.getElementById('setup-step2-ui').style.display = 'block';
+        updatePhaseHeader("character-setup-header.png", "Character Cards Setup");
+        log("Setup: Advanced to Character Cards setup.");
+    }
+
+    function startGameplay() {
+        document.getElementById('setup-step2-ui').style.display = 'none';
+        document.getElementById('gameplay-ui').style.display = 'block';
+        
+        updatePhaseHeader("gameplay-header.png", "Gameplay Phase");
+        log("--- Setup Finished: Started Gameplay Phase ---");
+    }
+
+    function takeLeRoyTurn() {
+        const d1 = Math.floor(Math.random() * 6) + 1;
+        const d2 = Math.floor(Math.random() * 6) + 1;
+        const total = d1 + d2;
+        const action = ACTION_TABLE[total];
+        
+        const resultBox = document.getElementById('result-display');
+        
+        const badgeContainer = document.getElementById('roll-badge');
+        badgeContainer.innerHTML = `
+            <span>Roll:</span>
+            <div class="action-die">${d1}</div>
+            <div class="action-die">${d2}</div>
+            <span class="roll-total-num">(${total})</span>
+        `;
+
+        document.getElementById('action-title').innerText = action.title;
+        document.getElementById('action-desc').innerText = action.desc;
+        document.getElementById('price-display').innerText = `Price: ${action.price} (Rank: R > Y > W)`;
+        
+        resultBox.classList.add('visible');
+        
+        log(`Gameplay: Rolled ${d1} + ${d2} (${total}) -> ${action.title}. Price: ${action.price}`);
+    }
+
+    function confirmEndGame() {
+        if (confirm("Are you sure you want to end the game and view scoring?")) {
+            document.getElementById('gameplay-ui').style.display = 'none';
+            document.getElementById('log-container').style.display = 'none';
+            document.getElementById('ref-section').style.display = 'none';
+            document.getElementById('scoring-ui').style.display = 'block';
+            
+            updatePhaseHeader("scoring-header.png", "Final Scoring");
+            log("--- Game Ended: Final Scoring View ---");
+        }
+    }
+
+    function fullReset() {
+        if (confirm("Reset the entire game? All progress will be lost.")) {
+            location.reload();
+        }
+    }
+
+    function log(msg) {
+        const l = document.getElementById('log');
+        l.innerHTML = `<div>• ${msg}</div>` + l.innerHTML;
+    }
+</script>
+</body>
+</html>
