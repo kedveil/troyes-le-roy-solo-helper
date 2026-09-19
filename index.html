@@ -4,6 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Troyes: Le Roy Solo Helper</title>
+
+    <!-- WebApp & Shortcut Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Le Roy Helper">
+    <meta name="theme-color" content="#7a2a1e">
+
+    <!-- iOS Apple Touch Icon (File First, Fallback Embedded Data URI) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%237a2a1e'/><rect x='28' y='28' width='456' height='456' rx='70' fill='none' stroke='%23fbc02d' stroke-width='16'/><path d='M256 80 L390 150 V320 L256 420 L122 320 V150 Z' fill='%23e0d7c6' stroke='%233d2b1f' stroke-width='12'/><circle cx='256' cy='250' r='32' fill='%23d32f2f'/><circle cx='195' cy='185' r='22' fill='%233d2b1f'/><circle cx='317' cy='315' r='22' fill='%233d2b1f'/></svg>">
+
+    <!-- Standard Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%237a2a1e'/><rect x='36' y='36' width='440' height='440' rx='80' fill='none' stroke='%23fbc02d' stroke-width='16'/><path d='M256 90 L390 160 V330 L256 420 L122 330 V160 Z' fill='%23e0d7c6' stroke='%23333' stroke-width='12'/><circle cx='256' cy='255' r='28' fill='%23d32f2f'/><circle cx='200' cy='190' r='20' fill='%23333'/><circle cx='312' cy='320' r='20' fill='%23333'/></svg>">
+
+    <!-- Embedded PWA Manifest -->
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlRyb3llczogTGUgUm95IFNvbG8gSGVscGVyIiwKICAic2hvcnRfbmFtZSI6ICJMZSBSb3kiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2UwZDdjNiIsCiAgInRoZW1lX2NvbG9yIjogIiM3YTJhMWUiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJhcHBsZS10b3VjaC1pY29uLnBuZyIsCiAgICAgICJzaXplcyI6ICIxODB4MTgwIiwKICAgICAgInR5cGUiOiAiaW1hZ2UvcG5nIgogICAgfQogIF0KfQ==">
+
     <style>
         :root { 
             --bg: #e0d7c6; 
@@ -56,13 +75,6 @@
             min-height: 38px;
         }
 
-        .header-spacer {
-            width: 30px;
-            height: 30px;
-            visibility: hidden;
-            flex-shrink: 0;
-        }
-
         h1 { 
             text-align: center; 
             color: var(--accent); 
@@ -73,11 +85,11 @@
             flex-grow: 1;
         }
 
-        .reset-btn { 
+        .header-btn { 
             background: transparent !important; 
             border: none; 
             color: var(--accent); 
-            font-size: 1.5rem; 
+            font-size: 1.3rem; 
             cursor: pointer; 
             padding: 0; 
             width: 30px;
@@ -87,16 +99,19 @@
             align-items: center;
             justify-content: center;
             box-shadow: none !important; 
-            transition: transform 0.25s ease, color 0.2s ease; 
+            transition: transform 0.2s ease, color 0.2s ease; 
             line-height: 1;
             outline: none;
+            border-radius: 50%;
         }
 
-        .reset-btn:hover { 
-            background: transparent !important;
-            transform: rotate(-90deg); 
+        .header-btn:hover { 
+            background: rgba(122, 42, 30, 0.1) !important;
             color: var(--accent-hover); 
-            box-shadow: none !important;
+        }
+
+        .reset-btn:hover {
+            transform: rotate(-90deg);
         }
 
         .phase-indicator { 
@@ -305,7 +320,7 @@
             padding: 10px 12px; 
             margin-top: 10px; 
             border-radius: 0 4px 4px 0; 
-            height: 155px; 
+            min-height: 165px; 
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -324,8 +339,30 @@
             margin: 4px 0 0 0; 
             line-height: 1.35; 
             color: #444;
-            height: 52px;
+            max-height: 60px;
             overflow-y: auto;
+        }
+
+        .price-container {
+            margin-top: 6px;
+        }
+
+        .price-tag { 
+            display: inline-block; 
+            background: #333; 
+            color: white; 
+            padding: 3px 8px; 
+            border-radius: 8px; 
+            font-size: 0.8rem; 
+            font-weight: bold; 
+        }
+
+        .price-footnote {
+            font-size: 0.72rem;
+            color: #666;
+            margin-top: 3px;
+            font-style: italic;
+            line-height: 1.2;
         }
         
         button { 
@@ -372,18 +409,6 @@
         button.danger:hover {
             background: #d32f2f;
             box-shadow: 0 2px 0 #8b0000;
-        }
-
-        .price-tag { 
-            display: inline-block; 
-            align-self: flex-start;
-            background: #333; 
-            color: white; 
-            padding: 3px 8px; 
-            border-radius: 8px; 
-            font-size: 0.8rem; 
-            margin-top: 4px; 
-            font-weight: bold; 
         }
 
         #log { 
@@ -486,14 +511,14 @@
 
 <div class="app-container">
     <div class="header-wrap">
-        <div class="header-spacer" aria-hidden="true"></div>
+        <button class="header-btn" onclick="openCreditsModal()" title="Credits & Info" aria-label="Credits & Info">ℹ</button>
         <h1>Le Roy's Challenge</h1>
-        <button class="reset-btn" onclick="fullReset()" title="Reset Game" aria-label="Reset Game">⟳</button>
+        <button class="header-btn reset-btn" onclick="fullReset()" title="Reset Game" aria-label="Reset Game">⟳</button>
     </div>
     
     <div id="phase-container" class="phase-indicator">
         <img id="phase-img" class="phase-header-img" src="initial-placement-header.png" alt="Initial Placement Phase" onerror="handlePhaseImgError('Initial Placement Phase')">
-        <span id="round-counter-badge" class="round-badge" style="display:none;">Round 1</span>
+        <span id="round-counter-badge" class="round-badge" style="display:none;">Turn 0</span>
     </div>
     
     <!-- STEP 1 SETUP -->
@@ -560,16 +585,26 @@
                 <h3 id="action-title" style="margin:0; color: #222; font-size: 0.92rem; height: 1.25em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">Ready for action roll</h3>
                 <p id="action-desc" class="action-desc-text">Roll 2D6 to execute Le Roy's turn.</p>
             </div>
-            <div id="price-display" class="price-tag">Price: -</div>
+            <div class="price-container">
+                <div id="price-display" class="price-tag">Price: -</div>
+                <div class="price-footnote">* Le Roy spends best dice first (highest value, then Red > Yellow > White).</div>
+            </div>
         </div>
 
         <button onclick="takeLeRoyTurn()" style="background: #4a6741; box-shadow: 0 2px 0 #2d4128; font-size: 1.15rem; margin-top: 10px;">Roll 2D6 Action</button>
-        <button class="secondary" onclick="nextRound()" style="margin-top: 8px;">Next Round →</button>
     </div>
 
     <!-- LOG SECTION -->
     <div id="log-container">
         <div id="log"><div>• App ready. Roll placement dice to begin setup.</div></div>
+    </div>
+
+    <!-- LE ROY GENERAL RULES REFERENCE -->
+    <div id="general-rules-section" class="ref-box">
+        <h4>Le Roy General Rules</h4>
+        <div class="ref-item"><strong>Black Dice Combat:</strong> Le Roy uses his strongest available die to eliminate ONLY the highest remaining black die. Any remaining black dice pass to the player.</div>
+        <div class="ref-item"><strong>Purchasing Dice:</strong> When purchasing Le Roy's dice on your turn, pay the appropriate deniers to the bank.</div>
+        <div class="ref-item"><strong>Negative Events:</strong> Negative events do NOT affect Le Roy. Any event targeting the neutral player targets Le Roy instead (meeples & cubes).</div>
     </div>
 
     <!-- CARD MODIFICATIONS REFERENCE -->
@@ -607,7 +642,8 @@
     </div>
 </div>
 
-<div id="info-modal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+<!-- PLACEMENT RULES MODAL -->
+<div id="info-modal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'info-modal')">
     <div class="modal-card">
         <h3>Dice & Placement Priority Rules</h3>
         <p><strong>Priority Order:</strong> Higher Value > Red > Yellow > White.</p>
@@ -618,26 +654,37 @@
             <li><strong>White:</strong> Bishopric</li>
         </ul>
         <p style="margin-top: 6px;">Le Roy places on the best available spots in each building. Equal numbers are resolved by color order. Dice values are irrelevant for exact building placement once priority order determines which 3 dice are used.</p>
-        <button class="modal-close-btn" onclick="closeModal()">Close</button>
+        <button class="modal-close-btn" onclick="closeModal('info-modal')">Close</button>
+    </div>
+</div>
+
+<!-- CREDITS MODAL -->
+<div id="credits-modal" class="modal-overlay" onclick="closeModalOnOverlay(event, 'credits-modal')">
+    <div class="modal-card">
+        <h3>Credits & Info</h3>
+        <p><strong>Companion App Notice:</strong><br>This web helper is an unofficial digital tool created to assist solo play alongside the physical <i>Troyes</i> board game.</p>
+        <p><strong>Solo Variant Design:</strong><br>"The King's Challenge" solo rules designed by <strong>Shadi Torbey</strong>.</p>
+        <p><strong>Troyes Board Game:</strong><br>Designed by Sébastien Dujardin, Xavier Georges, and Alain Orban (Published by Pearl Games).</p>
+        <button class="modal-close-btn" onclick="closeModal('credits-modal')">Close</button>
     </div>
 </div>
 
 <script>
-    let currentRound = 1;
+    let rollCounter = 0;
     const colorPriority = { red: 3, yellow: 2, white: 1 };
 
     const ACTION_TABLE = {
-        2: { title: "Le Roy gains 3 VP", desc: "Purchase your best available die for 6 deniers.", price: "3 dice" },
-        3: { title: "Le Roy gains 2 VP", desc: "Purchase your best available die for 4 deniers.", price: "2 dice" },
-        4: { title: "Le Roy places 1 worker meeple", desc: "Red = Palace, Yellow = City Hall, White = Bishopric. If possible, Le Roy evicts one of your meeples.", price: "1 die" },
-        5: { title: "Le Roy resolves right-most event", desc: "Le Roy spends 1 die per free banner on the event card.", price: "X die/dice" },
-        6: { title: "Le Roy places 1 tradesman meeple", desc: "Places on spot returning most VP. Tie: least expensive location. Tie: Red > Yellow > White.", price: "1 die" },
-        7: { title: "Le Roy places 2 cathedral cubes", desc: "Best spots on lowest available row. If full, Le Roy gains 2 VP instead.", price: "2 dice" },
+        2: { title: "Le Roy gains 3 VP", desc: "Purchase your best available die for 6 deniers.", price: "3 dice*" },
+        3: { title: "Le Roy gains 2 VP", desc: "Purchase your best available die for 4 deniers.", price: "2 dice*" },
+        4: { title: "Le Roy places 1 worker meeple", desc: "Red = Palace, Yellow = City Hall, White = Bishopric. If possible, Le Roy evicts one of your meeples.", price: "1 die*" },
+        5: { title: "Le Roy resolves right-most event", desc: "Le Roy spends 1 die per free banner on the event card.", price: "X die/dice*" },
+        6: { title: "Le Roy places 1 tradesman meeple", desc: "Places on spot returning most VP. Tie: least expensive location. Tie: Red > Yellow > White.", price: "1 die*" },
+        7: { title: "Le Roy places 2 cathedral cubes", desc: "Best spots on lowest available row. If full, Le Roy gains 2 VP instead.", price: "2 dice*" },
         8: { title: "Le Roy reveals a character card", desc: "Both receive points of top character immediately. Remove card. If empty, Le Roy gains 1 VP.", price: "FREE" },
-        9: { title: "Le Roy resolves right-most event", desc: "Le Roy spends 1 die per free banner on the event card.", price: "X die/dice" },
-        10: { title: "Le Roy places 1 worker meeple", desc: "Red = Palace, Yellow = City Hall, White = Bishopric. If possible, Le Roy evicts one of your meeples.", price: "1 die" },
-        11: { title: "Le Roy gains 2 VP", desc: "Purchase your best available die for 4 deniers.", price: "2 dice" },
-        12: { title: "Le Roy gains 3 VP", desc: "Purchase your best available die for 6 deniers.", price: "3 dice" }
+        9: { title: "Le Roy resolves right-most event", desc: "Le Roy spends 1 die per free banner on the event card.", price: "X die/dice*" },
+        10: { title: "Le Roy places 1 worker meeple", desc: "Red = Palace, Yellow = City Hall, White = Bishopric. If possible, Le Roy evicts one of your meeples.", price: "1 die*" },
+        11: { title: "Le Roy gains 2 VP", desc: "Purchase your best available die for 4 deniers.", price: "2 dice*" },
+        12: { title: "Le Roy gains 3 VP", desc: "Purchase your best available die for 6 deniers.", price: "3 dice*" }
     };
 
     function updatePhaseHeader(imgSrc, fallbackText) {
@@ -663,13 +710,17 @@
         document.getElementById('info-modal').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('info-modal').style.display = 'none';
+    function openCreditsModal() {
+        document.getElementById('credits-modal').style.display = 'flex';
     }
 
-    function closeModalOnOverlay(e) {
-        if (e.target.id === 'info-modal') {
-            closeModal();
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    function closeModalOnOverlay(e, modalId) {
+        if (e.target.id === modalId) {
+            closeModal(modalId);
         }
     }
 
@@ -713,16 +764,13 @@
         document.getElementById('round-counter-badge').style.display = 'inline-block';
         
         updatePhaseHeader("gameplay-header.png", "Gameplay Phase");
-        log("--- Setup Finished: Started Round 1 ---");
-    }
-
-    function nextRound() {
-        currentRound++;
-        document.getElementById('round-counter-badge').innerText = `Round ${currentRound}`;
-        log(`--- Advanced to Round ${currentRound} ---`);
+        log("--- Setup Finished: Started Gameplay Phase ---");
     }
 
     function takeLeRoyTurn() {
+        rollCounter++;
+        document.getElementById('round-counter-badge').innerText = `Turn ${rollCounter}`;
+
         const d1 = Math.floor(Math.random() * 6) + 1;
         const d2 = Math.floor(Math.random() * 6) + 1;
         const total = d1 + d2;
@@ -740,17 +788,18 @@
 
         document.getElementById('action-title').innerText = action.title;
         document.getElementById('action-desc').innerText = action.desc;
-        document.getElementById('price-display').innerText = `Price: ${action.price} (Rank: R > Y > W)`;
+        document.getElementById('price-display').innerText = `Price: ${action.price}`;
         
         resultBox.classList.add('visible');
         
-        log(`R${currentRound}: Rolled ${d1} + ${d2} (${total}) -> ${action.title}. Price: ${action.price}`);
+        log(`Turn ${rollCounter}: Rolled ${d1} + ${d2} (${total}) -> ${action.title}. Price: ${action.price}`);
     }
 
     function confirmEndGame() {
         if (confirm("Are you sure you want to end the game and view scoring?")) {
             document.getElementById('gameplay-ui').style.display = 'none';
             document.getElementById('log-container').style.display = 'none';
+            document.getElementById('general-rules-section').style.display = 'none';
             document.getElementById('ref-section').style.display = 'none';
             document.getElementById('end-game-btn').style.display = 'none';
             document.getElementById('scoring-ui').style.display = 'block';
