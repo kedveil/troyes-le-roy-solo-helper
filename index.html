@@ -4,21 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Troyes: Le Roy Solo Helper</title>
-
-    <!-- WebApp & Shortcut Meta Tags -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Le Roy Helper">
-    <meta name="theme-color" content="#7a2a1e">
-
-    <!-- Embedded SVG Icon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%237a2a1e'/><rect x='36' y='36' width='440' height='440' rx='80' fill='none' stroke='%23fbc02d' stroke-width='16'/><path d='M256 90 L390 160 V330 L256 420 L122 330 V160 Z' fill='%23e0d7c6' stroke='%23333' stroke-width='12'/><circle cx='256' cy='255' r='28' fill='%23d32f2f'/><circle cx='200' cy='190' r='20' fill='%23333'/><circle cx='312' cy='320' r='20' fill='%23333'/></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%237a2a1e'/><rect x='36' y='36' width='440' height='440' rx='80' fill='none' stroke='%23fbc02d' stroke-width='16'/><path d='M256 90 L390 160 V330 L256 420 L122 330 V160 Z' fill='%23e0d7c6' stroke='%23333' stroke-width='12'/><circle cx='256' cy='255' r='28' fill='%23d32f2f'/><circle cx='200' cy='190' r='20' fill='%23333'/><circle cx='312' cy='320' r='20' fill='%23333'/></svg>">
-
-    <!-- Embedded PWA Manifest -->
-    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIlRyb3llczogTGUgUm95IFNvbG8gSGVscGVyIiwKICAic2hvcnRfbmFtZSI6ICJMZSBSb3kiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2UwZDdjNiIsCiAgInRoZW1lX2NvbG9yIjogIiM3YTJhMWUiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBISjJ5Mjl1Y3kxemNHNWJJSE53WVdObFBURXlNRFFpSUhabGNYTnBaMjkwSUdaMWJHVjBJRnhvYVhSME9pOHZNREF3TDNsdmNuUWk4R1J2Y3kxM2IzSmtkR1FnZDJsbkRTNGdKVEkySWp3dmRHOXRJR0oxYm1ScGJuZFpPbmRwWVd4c1ptRnNZMjl1WDNSaFlXNHdaRzhpTENCamRXSnBkbVZ1ZEFpT2lKemFXUmtJbjA9IiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9zdmcreG1sIgogICAgfQogIF0KfQ==">
-
     <style>
         :root { 
             --bg: #e0d7c6; 
@@ -508,7 +493,7 @@
     
     <div id="phase-container" class="phase-indicator">
         <img id="phase-img" class="phase-header-img" src="initial-placement-header.png" alt="Initial Placement Phase" onerror="handlePhaseImgError('Initial Placement Phase')">
-        <span id="round-counter-badge" class="round-badge" style="display:none;">Turn 0</span>
+        <span id="round-counter-badge" class="round-badge" style="display:none;">Round 1</span>
     </div>
     
     <!-- STEP 1 SETUP -->
@@ -579,6 +564,7 @@
         </div>
 
         <button onclick="takeLeRoyTurn()" style="background: #4a6741; box-shadow: 0 2px 0 #2d4128; font-size: 1.15rem; margin-top: 10px;">Roll 2D6 Action</button>
+        <button class="secondary" onclick="nextRound()" style="margin-top: 8px;">Next Round →</button>
     </div>
 
     <!-- LOG SECTION -->
@@ -637,7 +623,7 @@
 </div>
 
 <script>
-    let rollCounter = 0;
+    let currentRound = 1;
     const colorPriority = { red: 3, yellow: 2, white: 1 };
 
     const ACTION_TABLE = {
@@ -727,13 +713,16 @@
         document.getElementById('round-counter-badge').style.display = 'inline-block';
         
         updatePhaseHeader("gameplay-header.png", "Gameplay Phase");
-        log("--- Setup Finished: Started Gameplay Phase ---");
+        log("--- Setup Finished: Started Round 1 ---");
+    }
+
+    function nextRound() {
+        currentRound++;
+        document.getElementById('round-counter-badge').innerText = `Round ${currentRound}`;
+        log(`--- Advanced to Round ${currentRound} ---`);
     }
 
     function takeLeRoyTurn() {
-        rollCounter++;
-        document.getElementById('round-counter-badge').innerText = `Turn ${rollCounter}`;
-
         const d1 = Math.floor(Math.random() * 6) + 1;
         const d2 = Math.floor(Math.random() * 6) + 1;
         const total = d1 + d2;
@@ -755,7 +744,7 @@
         
         resultBox.classList.add('visible');
         
-        log(`Turn ${rollCounter}: Rolled ${d1} + ${d2} (${total}) -> ${action.title}. Price: ${action.price}`);
+        log(`R${currentRound}: Rolled ${d1} + ${d2} (${total}) -> ${action.title}. Price: ${action.price}`);
     }
 
     function confirmEndGame() {
