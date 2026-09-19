@@ -474,6 +474,7 @@
         <img id="phase-img" class="phase-header-img" src="initial-placement-header.png" alt="Initial Placement Phase" onerror="handlePhaseImgError('Initial Placement Phase')">
     </div>
     
+    <!-- STEP 1 SETUP -->
     <div id="setup-step1-ui">
         <div class="setup-card">
             <div class="setup-card-header">
@@ -504,6 +505,7 @@
         <button class="secondary" style="margin-top:8px;" onclick="goToCharacterSetup()">Proceed: All Meeples Placed</button>
     </div>
 
+    <!-- STEP 2 SETUP -->
     <div id="setup-step2-ui" style="display:none;">
         <div class="setup-card">
             <div class="setup-card-header">
@@ -519,13 +521,12 @@
         <button onclick="startGameplay()" style="background: #4a6741; box-shadow: 0 2px 0 #2d4128; font-size: 1.1rem; margin-top: 12px;">Start Gameplay Phase</button>
     </div>
 
+    <!-- GAMEPLAY VIEW -->
     <div id="gameplay-ui" style="display:none;">
         <div class="theme-img-wrap" style="height: 70px;">
             <img src="action-icon.png" alt="Le Roy Action" onerror="this.parentNode.style.display='none'">
         </div>
 
-        <button onclick="takeLeRoyTurn()" style="background: #4a6741; box-shadow: 0 2px 0 #2d4128; font-size: 1.15rem;">Roll 2D6 Action</button>
-        
         <div id="result-display" class="action-box">
             <div>
                 <div id="roll-badge" class="roll-badge-wrap">
@@ -539,10 +540,28 @@
             </div>
             <div id="price-display" class="price-tag">Price: -</div>
         </div>
-        
-        <button class="danger" onclick="confirmEndGame()">End Game & Score</button>
+
+        <!-- Roll button positioned directly below the action box -->
+        <button onclick="takeLeRoyTurn()" style="background: #4a6741; box-shadow: 0 2px 0 #2d4128; font-size: 1.15rem; margin-top: 10px;">Roll 2D6 Action</button>
     </div>
 
+    <!-- LOG SECTION -->
+    <div id="log-container">
+        <div id="log"><div>• App ready. Roll placement dice to begin setup.</div></div>
+    </div>
+
+    <!-- CARD MODIFICATIONS REFERENCE -->
+    <div id="ref-section" class="ref-box">
+        <h4>Card Modifications Reference</h4>
+        <div class="ref-item"><strong>Tax Collector:</strong> Gain 2 denier per citizen in City Hall (instead of 1).</div>
+        <div class="ref-item"><strong>Tithing:</strong> Take up to 3 of Le Roy's yellow dice (max 3/action).</div>
+        <div class="ref-item"><strong>Migrant Workers:</strong> If cube placed in Cathedral, Le Roy +1 VP.</div>
+    </div>
+
+    <!-- END GAME BUTTON (At the very bottom) -->
+    <button id="end-game-btn" class="danger" style="display:none;" onclick="confirmEndGame()">End Game & Score</button>
+
+    <!-- SCORING VIEW -->
     <div id="scoring-ui" style="display:none;">
         <div class="score-box">
             <h4>Final Scoring Rules</h4>
@@ -563,17 +582,6 @@
             </table>
         </div>
         <button class="secondary" onclick="fullReset()" style="margin-top: 10px;">New Game</button>
-    </div>
-
-    <div id="log-container">
-        <div id="log"><div>• App ready. Roll placement dice to begin setup.</div></div>
-    </div>
-
-    <div id="ref-section" class="ref-box">
-        <h4>Card Modifications Reference</h4>
-        <div class="ref-item"><strong>Tax Collector:</strong> Gain 2 denier per citizen in City Hall (instead of 1).</div>
-        <div class="ref-item"><strong>Tithing:</strong> Take up to 3 of Le Roy's yellow dice (max 3/action).</div>
-        <div class="ref-item"><strong>Migrant Workers:</strong> If cube placed in Cathedral, Le Roy +1 VP.</div>
     </div>
 </div>
 
@@ -669,6 +677,7 @@
     function startGameplay() {
         document.getElementById('setup-step2-ui').style.display = 'none';
         document.getElementById('gameplay-ui').style.display = 'block';
+        document.getElementById('end-game-btn').style.display = 'block';
         
         updatePhaseHeader("gameplay-header.png", "Gameplay Phase");
         log("--- Setup Finished: Started Gameplay Phase ---");
@@ -704,6 +713,7 @@
             document.getElementById('gameplay-ui').style.display = 'none';
             document.getElementById('log-container').style.display = 'none';
             document.getElementById('ref-section').style.display = 'none';
+            document.getElementById('end-game-btn').style.display = 'none';
             document.getElementById('scoring-ui').style.display = 'block';
             
             updatePhaseHeader("scoring-header.png", "Final Scoring");
